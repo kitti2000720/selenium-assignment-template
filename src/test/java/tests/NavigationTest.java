@@ -2,6 +2,9 @@ package tests;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import pages.ProductPage;
 import pages.SearchResultsPage;
 import utils.TestConfig;
@@ -12,26 +15,26 @@ import static org.junit.jupiter.api.Assertions.*;
 class NavigationTest extends BaseTest {
 
     @Test
-    @DisplayName("The home page title contains 'PCX' text")
+    @DisplayName("The main page title contains 'PCX'")
     void homePageTitleContainsPcx() {
         homePage.open();
 
         assertTrue(homePage.getPageTitle().toUpperCase().contains("PCX") ||
                    homePage.getPageTitle().toLowerCase().contains("pcx"),
-            "The home page title should contain 'PCX', but it is: " + homePage.getPageTitle());
+            "The main page title should contain 'PCX', but it is: " + homePage.getPageTitle());
     }
 
     @Test
-    @DisplayName("The home page loads successfully")
+    @DisplayName("The main page loads successfully")
     void homePageLoadsSuccessfully() {
         homePage.open();
 
         assertTrue(homePage.isLoaded(),
-            "The home page should load successfully");
+            "The main page should load successfully");
     }
 
     @Test
-    @DisplayName("The browser back button returns to the search results")
+    @DisplayName("The back button returns to the search results")
     void browserBackFromProductReturnsToSearch() {
         homePage.open();
         SearchResultsPage results = homePage.searchFor(TestConfig.SEARCH_TERM_LAPTOP);
@@ -45,7 +48,7 @@ class NavigationTest extends BaseTest {
     }
 
     @Test
-    @DisplayName("The browser forward button returns to the product page")
+    @DisplayName("The forward button returns to the product page")
     void browserForwardReturnsToProductPage() {
         homePage.open();
         SearchResultsPage results = homePage.searchFor(TestConfig.SEARCH_TERM_LAPTOP);
@@ -86,5 +89,29 @@ class NavigationTest extends BaseTest {
 
         assertTrue(product.getBreadcrumbDepth() >= 2,
             "The breadcrumb should have at least 2 levels");
+    }
+
+    @Test
+    @DisplayName("Hovering over a category menu shows subcategories")
+    void hoveringOverCategoryMenuShowsSubcategories() {
+        homePage.open();
+
+        // Open the category menu first (hamburger button)
+        By hamburgerBtn = By.xpath("//a[contains(@class,'ctrl-desktop-menu')]");
+        homePage.waitForVisiblePublic(hamburgerBtn).click();
+
+        // Hover over a top-level category that has subcategories
+        By categoryLink = By.xpath(
+            "(//li[contains(@class,'catl-level-x')]//a[@data-pcat-deep='0'])[1]"
+        );
+        WebElement menuItem = homePage.waitForVisiblePublic(categoryLink);
+        new Actions(driver).moveToElement(menuItem).perform();
+
+        // Verify subcategory list becomes visible
+        By subcategoryList = By.xpath(
+            "//li[contains(@class,'catl-level-x') and contains(@class,'open')]//ul"
+        );
+        assertTrue(homePage.isElementPresentPublic(subcategoryList),
+            "The subcategory list should become visible on hover");
     }
 }

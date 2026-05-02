@@ -52,6 +52,14 @@ public abstract class BasePage {
         }
     }
 
+    public WebElement waitForVisiblePublic(By locator) {
+        return waitForVisible(locator);
+    }
+
+    public boolean isElementPresentPublic(By locator) {
+        return isElementPresent(locator);
+    }
+
     public String getPageTitle() {
         return driver.getTitle();
     }
