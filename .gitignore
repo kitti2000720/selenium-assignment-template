@@ -1,0 +1,11 @@
+target/
+.idea/
+*.iml
+.eclipse/
+.classpath
+.project
+.settings/
+.DS_Store
+Thumbs.db
+.env
+secrets.properties
